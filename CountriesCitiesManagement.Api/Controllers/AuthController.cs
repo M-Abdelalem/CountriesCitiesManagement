@@ -1,6 +1,7 @@
-using CountriesCitiesManagement.Api.Authentication;
+using CountriesCitiesManagement.Api.Features.Authentication;
 using CountriesCitiesManagement.Api.Models;
 using CountriesCitiesManagement.Api.Models.Authentication;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,27 +11,22 @@ namespace CountriesCitiesManagement.Api.Controllers;
 [Route("api/auth")]
 public sealed class AuthController : ControllerBase
 {
-    private readonly IAuthenticationService authenticationService;
+    private readonly ISender sender;
 
-    public AuthController(IAuthenticationService authenticationService)
+    public AuthController(ISender sender)
     {
-        this.authenticationService = authenticationService;
+        this.sender = sender;
     }
 
     [AllowAnonymous]
     [HttpPost("token")]
-    public ActionResult<ApiResponse<TokenResponse>> CreateToken([FromBody] LoginRequest request)
+    public async Task<ActionResult<ApiResponse<TokenResponse>>> CreateToken([FromBody] LoginRequest request)
     {
-        var token = authenticationService.Authenticate(
-            request.Username,
-            request.Password);
+        var token = await sender.Send(new LoginCommand(request.Username, request.Password));
 
         if (token is null)
         {
-            return Unauthorized(
-                ApiResponse<object?>.Failed(
-                    StatusCodes.Status401Unauthorized,
-                    "Invalid username or password."));
+            return Unauthorized(ApiResponse<object?>.Failed(StatusCodes.Status401Unauthorized,"Invalid username or password."));
         }
 
         return Ok(ApiResponse<TokenResponse>.Succeeded(token));

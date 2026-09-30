@@ -1,10 +1,10 @@
+using CountriesCitiesManagement.Application.Features.Countries;
 using CountriesCitiesManagement.Application.Interfaces;
-using CountriesCitiesManagement.Application.Models.Countries;
 using FluentValidation;
 
 namespace CountriesCitiesManagement.Application.Validation;
 
-public sealed class CreateCountryRequestValidator : AbstractValidator<CreateCountryRequest>
+public sealed class CreateCountryRequestValidator : AbstractValidator<CreateCountryCommand>
 {
     public CreateCountryRequestValidator(ICountryRepository countryRepository)
     {
@@ -32,7 +32,7 @@ public sealed class CreateCountryRequestValidator : AbstractValidator<CreateCoun
     }
 }
 
-public sealed class UpdateCountryRequestValidator : AbstractValidator<UpdateCountryRequest>
+public sealed class UpdateCountryRequestValidator : AbstractValidator<UpdateCountryCommand>
 {
     public UpdateCountryRequestValidator(ICountryRepository countryRepository)
     {
@@ -42,8 +42,8 @@ public sealed class UpdateCountryRequestValidator : AbstractValidator<UpdateCoun
             .WithMessage("Name is required.")
             .MaximumLength(100)
             .WithMessage("Name must not exceed 100 characters.")
-            .MustAsync(async (request, name, context, _) =>
-                !await countryRepository.NameExistsAsync(name, GetRouteId(context)))
+            .MustAsync(async (request, name, _) =>
+                !await countryRepository.NameExistsAsync(name, request.Id))
             .WithMessage(request => $"A country named '{request.Name}' already exists.")
             .WithErrorCode(ValidationErrorCodes.Conflict);
 
@@ -53,14 +53,9 @@ public sealed class UpdateCountryRequestValidator : AbstractValidator<UpdateCoun
             .WithMessage("Code is required.")
             .Matches("^[A-Za-z]{3}$")
             .WithMessage("Code must contain exactly three letters.")
-            .MustAsync(async (request, code, context, _) =>
-                !await countryRepository.CodeExistsAsync(code, GetRouteId(context)))
+            .MustAsync(async (request, code, _) =>
+                !await countryRepository.CodeExistsAsync(code, request.Id))
             .WithMessage(request => $"A country with code '{request.Code}' already exists.")
             .WithErrorCode(ValidationErrorCodes.Conflict);
     }
-
-    private static int? GetRouteId(ValidationContext<UpdateCountryRequest> context)
-        => context.RootContextData.TryGetValue("id", out var value) && value is int id
-            ? id
-            : null;
 }

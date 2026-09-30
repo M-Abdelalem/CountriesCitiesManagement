@@ -19,9 +19,7 @@ internal sealed class AuthenticationService : IAuthenticationService
     public AuthenticationService(AuthenticationOptions options)
     {
         this.options = options;
-        signingCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(Convert.FromBase64String(options.SigningKey)),
-            SecurityAlgorithms.HmacSha256);
+        signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Convert.FromBase64String(options.SigningKey)),SecurityAlgorithms.HmacSha256);
     }
 
     public TokenResponse? Authenticate(string username, string password)

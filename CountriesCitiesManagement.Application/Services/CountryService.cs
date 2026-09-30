@@ -49,7 +49,9 @@ internal sealed class CountryService : ICountryService
             page.TotalCount);
     }
 
-    public async Task<CountryDto> UpdateAsync(int id, UpdateCountryRequest request)
+    public async Task<CountryDto> UpdateAsync(
+        int id,
+        UpdateCountryRequest request)
     {
         var country = await GetCountryAsync(id);
 

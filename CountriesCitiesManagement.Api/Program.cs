@@ -1,11 +1,11 @@
 using CountriesCitiesManagement.Api.ExceptionHandling;
 using CountriesCitiesManagement.Api.Extensions;
 using CountriesCitiesManagement.Api.Models;
-using CountriesCitiesManagement.Api.Validation;
 using CountriesCitiesManagement.Application;
 using CountriesCitiesManagement.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using ApiServiceCollectionExtensions = CountriesCitiesManagement.Api.Extensions.ServiceCollectionExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +13,6 @@ builder.Services
     .AddControllers(options =>
     {
         options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
-        options.Filters.Add<FluentValidationFilter>();
     })
     .ConfigureApiBehaviorOptions(options =>
     {
@@ -44,7 +43,9 @@ builder.Services.AddApiAuthentication(builder.Configuration);
 builder.Services.AddApiRateLimiting(builder.Configuration);
 builder.Services.AddApiSerilog(builder.Configuration);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' is required.");
 builder.Services.AddInfrastructure(connectionString);
 var app = builder.Build();
 app.Use(async (context, next) =>
@@ -73,12 +74,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
-app.UseCors(ServiceCollectionExtensions.FrontendCorsPolicy);
+app.UseCors(ApiServiceCollectionExtensions.FrontendCorsPolicy);
 app.UseAuthentication();
 app.UseRateLimiter();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
-app.MapControllers().RequireRateLimiting(ServiceCollectionExtensions.PerEndpointRateLimitPolicy);
+app.MapControllers().RequireRateLimiting(ApiServiceCollectionExtensions.PerEndpointRateLimitPolicy);
 
 app.Run();

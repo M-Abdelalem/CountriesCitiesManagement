@@ -1,10 +1,10 @@
+using CountriesCitiesManagement.Application.Features.Cities;
 using CountriesCitiesManagement.Application.Interfaces;
-using CountriesCitiesManagement.Application.Models.Cities;
 using FluentValidation;
 
 namespace CountriesCitiesManagement.Application.Validation;
 
-public sealed class CreateCityRequestValidator : AbstractValidator<CreateCityRequest>
+public sealed class CreateCityRequestValidator : AbstractValidator<CreateCityCommand>
 {
     public CreateCityRequestValidator(ICityRepository cityRepository,ICountryRepository countryRepository)
     {
@@ -15,9 +15,9 @@ public sealed class CreateCityRequestValidator : AbstractValidator<CreateCityReq
             .MaximumLength(100)
             .WithMessage("Name must not exceed 100 characters.")
             .MustAsync(async (request, name, _) =>
-                !await cityRepository.NameExistsAsync(name, request.CountryId, null))
+                !await cityRepository.NameExistsAsync(name,request.CountryId,null))
             .When(request => request.CountryId > 0, ApplyConditionTo.CurrentValidator)
-            .WithMessage(request => $"A city named '{request.Name}' already exists in country {request.CountryId}.")
+            .WithMessage(request =>$"A city named '{request.Name}' already exists in country {request.CountryId}.")
             .WithErrorCode(ValidationErrorCodes.Conflict);
 
         RuleFor(request => request.CountryId)
@@ -31,7 +31,7 @@ public sealed class CreateCityRequestValidator : AbstractValidator<CreateCityReq
     }
 }
 
-public sealed class UpdateCityRequestValidator : AbstractValidator<UpdateCityRequest>
+public sealed class UpdateCityRequestValidator : AbstractValidator<UpdateCityCommand>
 {
     public UpdateCityRequestValidator(ICityRepository cityRepository,ICountryRepository countryRepository)
     {
@@ -41,13 +41,13 @@ public sealed class UpdateCityRequestValidator : AbstractValidator<UpdateCityReq
             .WithMessage("Name is required.")
             .MaximumLength(100)
             .WithMessage("Name must not exceed 100 characters.")
-            .MustAsync(async (request, name, context, _) =>
+            .MustAsync(async (request, name, _) =>
                 !await cityRepository.NameExistsAsync(
                     name,
                     request.CountryId,
-                    GetRouteId(context)))
+                    request.Id))
             .When(request => request.CountryId > 0, ApplyConditionTo.CurrentValidator)
-            .WithMessage(request => $"A city named '{request.Name}' already exists in country {request.CountryId}.")
+            .WithMessage(request =>$"A city named '{request.Name}' already exists in country {request.CountryId}.")
             .WithErrorCode(ValidationErrorCodes.Conflict);
 
         RuleFor(request => request.CountryId)
@@ -59,9 +59,4 @@ public sealed class UpdateCityRequestValidator : AbstractValidator<UpdateCityReq
             .WithMessage(request => $"Country with ID {request.CountryId} was not found.")
             .WithErrorCode(ValidationErrorCodes.NotFound);
     }
-
-    private static int? GetRouteId(ValidationContext<UpdateCityRequest> context)
-        => context.RootContextData.TryGetValue("id", out var value) && value is int id
-            ? id
-            : null;
 }

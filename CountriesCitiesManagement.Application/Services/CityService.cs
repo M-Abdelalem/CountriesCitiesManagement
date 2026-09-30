@@ -42,7 +42,7 @@ internal sealed class CityService : ICityService
         return await GetPageAsync(query, countryId);
     }
 
-    public async Task<CityDto> UpdateAsync(int id, UpdateCityRequest request)
+    public async Task<CityDto> UpdateAsync(int id,UpdateCityRequest request)
     {
         var city = await GetCityAsync(id);
 
