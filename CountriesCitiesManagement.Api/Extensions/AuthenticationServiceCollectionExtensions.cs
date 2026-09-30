@@ -1,10 +1,6 @@
 using CountriesCitiesManagement.Api.Authentication;
-using CountriesCitiesManagement.Api.Features.Authentication;
 using CountriesCitiesManagement.Api.Models;
-using CountriesCitiesManagement.Api.Models.Authentication;
-using CountriesCitiesManagement.Api.Validation;
-using FluentValidation;
-using MediatR;
+using CountriesCitiesManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -28,8 +24,6 @@ internal static class AuthenticationServiceCollectionExtensions
 
         services.AddSingleton(authenticationOptions);
         services.AddSingleton<IAuthenticationService, AuthenticationService>();
-        services.AddTransient<IValidator<LoginCommand>, LoginCommandValidator>();
-        services.AddTransient<IRequestHandler<LoginCommand, TokenResponse?>, LoginCommandHandler>();
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

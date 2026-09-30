@@ -1,6 +1,7 @@
-using CountriesCitiesManagement.Api.Features.Authentication;
 using CountriesCitiesManagement.Api.Models;
 using CountriesCitiesManagement.Api.Models.Authentication;
+using CountriesCitiesManagement.Application.Features.Authentication;
+using CountriesCitiesManagement.Application.Models.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

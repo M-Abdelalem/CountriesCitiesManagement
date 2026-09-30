@@ -1,9 +1,9 @@
-using CountriesCitiesManagement.Api.Features.Authentication;
+using CountriesCitiesManagement.Application.Features.Authentication;
 using FluentValidation;
 
-namespace CountriesCitiesManagement.Api.Validation;
+namespace CountriesCitiesManagement.Application.Validation;
 
-internal sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
+public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
     public LoginCommandValidator()
     {

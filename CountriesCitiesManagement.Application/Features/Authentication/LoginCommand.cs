@@ -1,8 +1,8 @@
-using CountriesCitiesManagement.Api.Authentication;
-using CountriesCitiesManagement.Api.Models.Authentication;
+using CountriesCitiesManagement.Application.Interfaces;
+using CountriesCitiesManagement.Application.Models.Authentication;
 using MediatR;
 
-namespace CountriesCitiesManagement.Api.Features.Authentication;
+namespace CountriesCitiesManagement.Application.Features.Authentication;
 
 public sealed record LoginCommand(
     string Username,
@@ -18,7 +18,9 @@ internal sealed class LoginCommandHandler
         this.authenticationService = authenticationService;
     }
 
-    public Task<TokenResponse?> Handle(LoginCommand request,CancellationToken _)
+    public Task<TokenResponse?> Handle(
+        LoginCommand request,
+        CancellationToken _)
         => Task.FromResult(
             authenticationService.Authenticate(
                 request.Username,

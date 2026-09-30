@@ -4,9 +4,11 @@ using FluentValidation;
 
 namespace CountriesCitiesManagement.Application.Validation;
 
-public sealed class CreateCityRequestValidator : AbstractValidator<CreateCityCommand>
+public sealed class CreateCityCommandValidator : AbstractValidator<CreateCityCommand>
 {
-    public CreateCityRequestValidator(ICityRepository cityRepository,ICountryRepository countryRepository)
+    public CreateCityCommandValidator(
+        ICityRepository cityRepository,
+        ICountryRepository countryRepository)
     {
         RuleFor(request => request.Name)
             .Cascade(CascadeMode.Stop)
@@ -31,9 +33,11 @@ public sealed class CreateCityRequestValidator : AbstractValidator<CreateCityCom
     }
 }
 
-public sealed class UpdateCityRequestValidator : AbstractValidator<UpdateCityCommand>
+public sealed class UpdateCityCommandValidator : AbstractValidator<UpdateCityCommand>
 {
-    public UpdateCityRequestValidator(ICityRepository cityRepository,ICountryRepository countryRepository)
+    public UpdateCityCommandValidator(
+        ICityRepository cityRepository,
+        ICountryRepository countryRepository)
     {
         RuleFor(request => request.Name)
             .Cascade(CascadeMode.Stop)

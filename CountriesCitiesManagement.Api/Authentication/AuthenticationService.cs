@@ -1,15 +1,11 @@
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using CountriesCitiesManagement.Api.Models.Authentication;
+using CountriesCitiesManagement.Application.Interfaces;
+using CountriesCitiesManagement.Application.Models.Authentication;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CountriesCitiesManagement.Api.Authentication;
-
-public interface IAuthenticationService
-{
-    TokenResponse? Authenticate(string username, string password);
-}
 
 internal sealed class AuthenticationService : IAuthenticationService
 {
